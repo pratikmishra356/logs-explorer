@@ -7,6 +7,7 @@ export default function OrganizationsPage() {
   const [orgs, setOrgs] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [form, setForm] = useState({ name: '', slug: '', description: '' });
   const [creating, setCreating] = useState(false);
 
@@ -46,13 +47,108 @@ export default function OrganizationsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Organizations</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition"
-        >
-          {showForm ? 'Cancel' : '+ New Organization'}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowInstructions(!showInstructions)}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition"
+          >
+            {showInstructions ? 'Hide' : 'Show'} Setup Guide
+          </button>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition"
+          >
+            {showForm ? 'Cancel' : '+ New Organization'}
+          </button>
+        </div>
       </div>
+
+      {/* Setup Instructions */}
+      {showInstructions && (
+        <div className="mb-8 bg-blue-900/20 border border-blue-800 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-blue-300 mb-4">Organization Setup Guide</h2>
+          <div className="space-y-4 text-sm text-gray-300">
+            <div className="flex gap-3">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+              <div>
+                <h3 className="font-semibold text-white mb-1">Create Organization</h3>
+                <p className="text-gray-400">Click "+ New Organization" above and fill in:</p>
+                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
+                  <li><strong>Name</strong>: Display name (e.g., "Production", "Staging")</li>
+                  <li><strong>Slug</strong>: URL-friendly identifier (auto-generated from name)</li>
+                  <li><strong>Description</strong>: Optional description</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</div>
+              <div>
+                <h3 className="font-semibold text-white mb-1">Configure Provider Connection</h3>
+                <p className="text-gray-400">After creating, click on the organization and:</p>
+                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
+                  <li>Click <strong>"Configure Provider"</strong> in the Provider Configuration section</li>
+                  <li>Select provider type (currently <strong>Splunk Cloud</strong>)</li>
+                  <li>Enter <strong>Host URL</strong> (e.g., <code className="text-blue-400">https://your-instance.splunkcloud.com</code>)</li>
+                  <li>Paste your <strong>Cookie</strong> (Splunk session cookie)</li>
+                  <li>Enter <strong>CSRF Token</strong> (from Splunk)</li>
+                  <li>Click <strong>"Save Configuration"</strong></li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">3</div>
+              <div>
+                <h3 className="font-semibold text-white mb-1">Sync Metadata</h3>
+                <p className="text-gray-400">Once provider is configured:</p>
+                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
+                  <li>Click <strong>"Test"</strong> to verify connection</li>
+                  <li>Click <strong>"Sync Metadata"</strong> to fetch indexes, applications, and dashboards</li>
+                  <li>Wait for sync to complete (may take a minute)</li>
+                  <li>Indexes will appear in the <strong>Indexes</strong> tab</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">4</div>
+              <div>
+                <h3 className="font-semibold text-white mb-1">Mark Important Indexes</h3>
+                <p className="text-gray-400">In the organization detail page:</p>
+                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
+                  <li>Scroll to the <strong>"Important Indexes"</strong> section</li>
+                  <li>Click <strong>"Edit"</strong></li>
+                  <li>Enter index names separated by commas (e.g., <code className="text-blue-400">prod_g2, prod_restaurant</code>)</li>
+                  <li>Click <strong>"Save"</strong></li>
+                  <li>These indexes will be prioritized in API responses and UI</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">5</div>
+              <div>
+                <h3 className="font-semibold text-white mb-1">Sync Sources (Optional)</h3>
+                <p className="text-gray-400">To discover services/log sources within an index:</p>
+                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
+                  <li>Go to the <strong>Indexes</strong> tab</li>
+                  <li>Click on an index to expand it</li>
+                  <li>Click <strong>"Sync Sources"</strong> for that index</li>
+                  <li>Wait for sync (may take several minutes for large indexes)</li>
+                  <li>Sources will appear with their log counts and time ranges</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-blue-800">
+              <p className="text-xs text-gray-400">
+                <strong>Tip:</strong> Once setup is complete, you can use the <strong>"Search Logs"</strong> button to query logs by index, source, and search terms.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <form onSubmit={handleCreate} className="mb-8 bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
