@@ -5,14 +5,18 @@ import SearchPage from './pages/SearchPage';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen bg-white">
+
       {/* Top nav */}
-      <nav className="border-b border-gray-800 bg-gray-900/80 backdrop-blur sticky top-0 z-50">
+      <nav className="border-b border-slate-200 bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-14 gap-8">
-          <Link to="/" className="text-lg font-bold tracking-tight text-white">
+          <Link to="/" className="text-lg font-semibold text-slate-800">
             Log Explorer
           </Link>
-          <Link to="/" className="text-sm text-gray-400 hover:text-white transition">
+          <Link 
+            to="/" 
+            className="text-sm text-slate-600 hover:text-slate-800 transition-colors"
+          >
             Organizations
           </Link>
         </div>

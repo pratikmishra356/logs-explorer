@@ -45,19 +45,26 @@ export default function OrganizationsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Organizations</h1>
-        <div className="flex gap-3">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-1">Organizations</h1>
+          <p className="text-slate-600">Manage your organizations and their log providers</p>
+        </div>
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setShowInstructions(!showInstructions)}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition"
+            className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 transition-colors"
           >
             {showInstructions ? 'Hide' : 'Show'} Setup Guide
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition"
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md flex items-center gap-2"
           >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
             {showForm ? 'Cancel' : '+ New Organization'}
           </button>
         </div>
@@ -65,156 +72,128 @@ export default function OrganizationsPage() {
 
       {/* Setup Instructions */}
       {showInstructions && (
-        <div className="mb-8 bg-blue-900/20 border border-blue-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-blue-300 mb-4">Organization Setup Guide</h2>
-          <div className="space-y-4 text-sm text-gray-300">
-            <div className="flex gap-3">
-              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Create Organization</h3>
-                <p className="text-gray-400">Click "+ New Organization" above and fill in:</p>
-                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
-                  <li><strong>Name</strong>: Display name (e.g., "Production", "Staging")</li>
-                  <li><strong>Slug</strong>: URL-friendly identifier (auto-generated from name)</li>
-                  <li><strong>Description</strong>: Optional description</li>
-                </ul>
+        <div className="mb-8 bg-slate-50 border border-slate-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">Setup Guide</h2>
+          <div className="space-y-6 text-sm text-slate-700">
+            {[
+              {
+                step: 1,
+                title: 'Create Organization',
+                desc: 'Click "Create workspace" and fill in name, slug, and optional description.',
+              },
+              {
+                step: 2,
+                title: 'Configure Provider',
+                desc: 'Open the organization → Click "Configure Provider" → Enter Splunk Cloud host URL, cookie, and CSRF token.',
+              },
+              {
+                step: 3,
+                title: 'Sync Metadata',
+                desc: 'Click "Test" to verify connection, then "Sync Metadata" to fetch indexes, applications, and dashboards.',
+              },
+              {
+                step: 4,
+                title: 'Mark Important Indexes',
+                desc: 'In "Important Indexes" section, click "Edit" → Enter comma-separated index names → Save.',
+              },
+              {
+                step: 5,
+                title: 'Sync Sources (Optional)',
+                desc: 'Go to Indexes tab → Expand an index → Click "Sync Sources" to discover services/log sources.',
+              },
+            ].map((item) => (
+              <div key={item.step} className="flex gap-3">
+                <div className="shrink-0 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                  {item.step}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-slate-800 mb-1 text-sm">{item.title}</h3>
+                  <p className="text-slate-600 text-sm">{item.desc}</p>
+                </div>
               </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Configure Provider Connection</h3>
-                <p className="text-gray-400">After creating, click on the organization and:</p>
-                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
-                  <li>Click <strong>"Configure Provider"</strong> in the Provider Configuration section</li>
-                  <li>Select provider type (currently <strong>Splunk Cloud</strong>)</li>
-                  <li>Enter <strong>Host URL</strong> (e.g., <code className="text-blue-400">https://your-instance.splunkcloud.com</code>)</li>
-                  <li>Paste your <strong>Cookie</strong> (Splunk session cookie)</li>
-                  <li>Enter <strong>CSRF Token</strong> (from Splunk)</li>
-                  <li>Click <strong>"Save Configuration"</strong></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">3</div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Sync Metadata</h3>
-                <p className="text-gray-400">Once provider is configured:</p>
-                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
-                  <li>Click <strong>"Test"</strong> to verify connection</li>
-                  <li>Click <strong>"Sync Metadata"</strong> to fetch indexes, applications, and dashboards</li>
-                  <li>Wait for sync to complete (may take a minute)</li>
-                  <li>Indexes will appear in the <strong>Indexes</strong> tab</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">4</div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Mark Important Indexes</h3>
-                <p className="text-gray-400">In the organization detail page:</p>
-                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
-                  <li>Scroll to the <strong>"Important Indexes"</strong> section</li>
-                  <li>Click <strong>"Edit"</strong></li>
-                  <li>Enter index names separated by commas (e.g., <code className="text-blue-400">prod_g2, prod_restaurant</code>)</li>
-                  <li>Click <strong>"Save"</strong></li>
-                  <li>These indexes will be prioritized in API responses and UI</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <div className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">5</div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Sync Sources (Optional)</h3>
-                <p className="text-gray-400">To discover services/log sources within an index:</p>
-                <ul className="list-disc list-inside mt-1 text-gray-400 ml-4 space-y-1">
-                  <li>Go to the <strong>Indexes</strong> tab</li>
-                  <li>Click on an index to expand it</li>
-                  <li>Click <strong>"Sync Sources"</strong> for that index</li>
-                  <li>Wait for sync (may take several minutes for large indexes)</li>
-                  <li>Sources will appear with their log counts and time ranges</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-blue-800">
-              <p className="text-xs text-gray-400">
-                <strong>Tip:</strong> Once setup is complete, you can use the <strong>"Search Logs"</strong> button to query logs by index, source, and search terms.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       )}
 
+      {/* Create Form */}
       {showForm && (
-        <form onSubmit={handleCreate} className="mb-8 bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleCreate} className="mb-8 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">Create New Organization</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Name</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Name</label>
               <input
                 value={form.name}
                 onChange={e => { setForm({ ...form, name: e.target.value, slug: autoSlug(e.target.value) }); }}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                placeholder="Acme Inc."
+                className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition"
+                placeholder="Production"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Slug</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Slug</label>
               <input
                 value={form.slug}
                 onChange={e => setForm({ ...form, slug: e.target.value })}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                placeholder="acme-inc"
+                className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition"
+                placeholder="production"
                 required
                 pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
               />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Description</label>
+          <div className="mt-6">
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
             <input
               value={form.description}
               onChange={e => setForm({ ...form, description: e.target.value })}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 outline-none transition"
               placeholder="Optional description"
             />
           </div>
           <button
             type="submit"
             disabled={creating}
-            className="px-5 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition"
+            className="mt-4 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-all"
           >
             {creating ? 'Creating...' : 'Create Organization'}
           </button>
         </form>
       )}
 
+      {/* Organizations List */}
       {loading ? (
-        <div className="text-gray-500">Loading...</div>
+        <div className="text-center py-16">
+          <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-slate-400"></div>
+          <p className="mt-3 text-slate-600 text-sm">Loading...</p>
+        </div>
       ) : orgs.length === 0 ? (
-        <div className="text-gray-500 text-center py-20">No organizations yet. Create one to get started.</div>
+        <div className="text-center py-16 bg-white border border-slate-200 rounded-xl">
+          <p className="text-slate-600 mb-2">No organizations yet</p>
+          <p className="text-slate-500 text-sm">Create your first organization to get started</p>
+        </div>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {orgs.map(org => (
             <Link
               key={org.id}
               to={`/orgs/${org.id}`}
-              className="block bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-600 transition"
+              className="group block bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 hover:shadow-sm transition-all"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold">{org.name}</h2>
-                  <p className="text-sm text-gray-500 mt-0.5">{org.slug}</p>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h2 className="text-base font-semibold text-slate-800 group-hover:text-slate-900">{org.name}</h2>
+                  <p className="text-xs text-slate-500 mt-1 font-mono">{org.slug}</p>
                   {org.description && (
-                    <p className="text-sm text-gray-400 mt-1">{org.description}</p>
+                    <p className="text-sm text-slate-600 mt-2">{org.description}</p>
                   )}
                 </div>
-                <div className={`text-xs px-2 py-1 rounded-full ${org.is_active ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
+                <div className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  org.is_active 
+                    ? 'bg-emerald-100 text-emerald-700' 
+                    : 'bg-slate-100 text-slate-600'
+                }`}>
                   {org.is_active ? 'Active' : 'Inactive'}
                 </div>
               </div>
