@@ -148,10 +148,10 @@ async def search_sources(
     req: SourceSearchRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Search sources by regex matching.
+    """Search sources by keyword matching.
 
-    - Splits space-separated search string into multiple terms
-    - Each term is searched as a case-insensitive regex pattern
+    - Splits space-separated search string into multiple terms (OR)
+    - Each term uses case-insensitive LIKE; * in term matches any chars
     - Returns matches with repository name and id included
     - Optionally filter to a specific repository_id
     """
@@ -168,11 +168,11 @@ async def search_sources(
     if not search_terms:
         return SourceSearchResponse(matches=[])
 
-    # Build OR conditions: source name matches any term (case-insensitive regex)
+    # Build OR conditions: source name matches any term (case-insensitive)
+    # Use SQL LIKE: * in user input -> % (any chars). ilike is case-insensitive.
     conditions = []
     for term in search_terms:
-        # Escape special regex chars except * which we treat as wildcard
-        pattern = term.replace("*", ".*").replace("+", "\\+").replace("?", "\\?")
+        pattern = term.replace("*", "%")
         conditions.append(LogSource.name.ilike(f"%{pattern}%"))
 
     query = query.where(or_(*conditions))

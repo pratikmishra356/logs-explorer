@@ -51,10 +51,11 @@ async def search_logs(
         spl_parts.append(f'source="*{source_clean}*"')
 
     if req.query:
-        # Each query string gets wrapped in quotes
+        # Each query string gets wrapped in quotes, combined with OR (match any term)
         quoted_queries = [f'"{q}"' for q in req.query if q.strip()]
         if quoted_queries:
-            spl_parts.extend(quoted_queries)
+            or_clause = " OR ".join(quoted_queries)
+            spl_parts.append(f"({or_clause})")
 
     spl = " ".join(spl_parts)
 
